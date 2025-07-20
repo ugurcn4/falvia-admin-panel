@@ -1,70 +1,111 @@
-# Getting Started with Create React App
+# Falvia Admin Panel
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Modern ve kullanıcı dostu falcılık platformu yönetim paneli.
 
-## Available Scripts
+## 🚀 Ücretsiz Deployment Seçenekleri
 
-In the project directory, you can run:
+### 1. Vercel (Önerilen)
+```bash
+# Vercel CLI kurulumu
+npm i -g vercel
 
-### `npm start`
+# Proje dizininde
+vercel login
+vercel --prod
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 2. Netlify
+```bash
+# Netlify CLI kurulumu
+npm i -g netlify-cli
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Build ve deploy
+npm run build
+netlify deploy --prod --dir=build
+```
 
-### `npm test`
+### 3. GitHub Pages
+```bash
+# package.json'a ekle
+"homepage": "https://kullaniciadi.github.io/repo-adi",
+"scripts": {
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build"
+}
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Deploy
+npm run deploy
+```
 
-### `npm run build`
+### 4. Firebase Hosting
+```bash
+# Firebase CLI kurulumu
+npm i -g firebase-tools
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Firebase projesi oluştur ve deploy
+firebase login
+firebase init hosting
+npm run build
+firebase deploy
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 📋 Kurulum
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+npm install
+npm start
+```
 
-### `npm run eject`
+## 🔧 Gereksinimler
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Node.js 14+
+- Supabase hesabı (ücretsiz tier)
+- Modern web tarayıcısı
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🎨 Özellikler
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **Kullanıcı Yönetimi**: Kullanıcı listesi, düzenleme, istatistikler
+- **Falcı Yönetimi**: Falcı ekleme, düzenleme, profil fotoğrafı
+- **Hikaye Yönetimi**: 
+  - Falcı hikayeleri oluşturma ve düzenleme
+  - Resim ve video yükleme (50MB'a kadar)
+  - 24 saat geçerlilik süresi
+  - Görüntülenme istatistikleri
+  - Tamamlanma oranları
+  - Detaylı analitik raporlar
+- **Fal Yönetimi**: Fal durumları, detay görüntüleme
+- **Modern UI**: Responsive tasarım, koyu tema
+- **Güvenlik**: Supabase authentication
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🌐 Environment Variables
 
-## Learn More
+`.env` dosyası oluşturun:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```env
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 📱 Kullanım
 
-### Code Splitting
+1. Supabase'de ücretsiz hesap oluşturun
+2. Database schema'yı import edin
+3. Environment variables'ları ayarlayın
+4. Deploy edin
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 💰 Maliyet
 
-### Analyzing the Bundle Size
+- **Hosting**: Ücretsiz (Vercel/Netlify)
+- **Database**: Ücretsiz (Supabase Free Tier)
+- **Storage**: Ücretsiz (Supabase 1GB)
+- **Domain**: Ücretsiz (Vercel/Netlify subdomain)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🔒 Güvenlik
 
-### Making a Progressive Web App
+- Supabase Row Level Security
+- JWT token authentication
+- Environment variables ile API key koruması
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 📞 Destek
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Herhangi bir sorun için GitHub Issues kullanabilirsiniz.
