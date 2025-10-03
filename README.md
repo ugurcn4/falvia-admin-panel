@@ -64,10 +64,30 @@ npm start
 
 ## 🎨 Özellikler
 
-- **Kullanıcı Yönetimi**: Kullanıcı listesi, düzenleme, istatistikler
+- **Kullanıcı Yönetimi**: 
+  - Kullanıcı listesi ve düzenleme
+  - Admin yetkisi verme/kaldırma
+  - Hızlı admin toggle butonu
+  - Kullanıcı istatistikleri
 - **Falcı Yönetimi**: Falcı ekleme, düzenleme, profil fotoğrafı
-- **Hikaye Yönetimi**: Falcı hikayeleri, kategori yönetimi
-- **Fal Yönetimi**: Fal durumları, detay görüntüleme
+- **Hikaye Yönetimi**: 
+  - Falcı hikayeleri oluşturma ve düzenleme
+  - Resim ve video yükleme (50MB'a kadar)
+  - 24 saat geçerlilik süresi
+  - Görüntülenme istatistikleri
+  - Tamamlanma oranları
+  - Detaylı analitik raporlar
+- **Falcı Post Yönetimi**: 
+  - Falcıların sosyal medya tarzı post paylaşımı
+  - Resim yükleme (5MB'a kadar)
+  - Kategori sistemi (Astroloji, Tarot, Numeroloji vb.)
+  - Beğeni ve yorum sistemi
+  - Post görüntüleme ve düzenleme
+  - Yorum yönetimi
+- **Fal Yönetimi**: 
+  - Fal durumları ve detay görüntüleme
+  - Fal resmi yükleme ve görüntüleme
+  - Resim yükleme hata yönetimi
 - **Modern UI**: Responsive tasarım, koyu tema
 - **Güvenlik**: Supabase authentication
 
@@ -103,3 +123,14 @@ REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 ## 📞 Destek
 
 Herhangi bir sorun için GitHub Issues kullanabilirsiniz.
+
+## Home Banners (Yeni)
+- Admin panelde `Home Banners` menüsü eklendi.
+- Liste ekranı ile banner kayıtlarını görüntüleyebilir, kopyalayabilir, aktifleştirip/pasifleştirebilir ve silebilirsiniz.
+- Rotalar:
+  - `/home-banners`
+  - `/home-banners/add`
+  - `/home-banners/edit/:id`
+- Oluştur/Düzenle formu eklendi. Doğrulamalar: gradient/arka plan zorunlulukları, yazı rengi fallback (#FFFFFF), ikon kısıtı, tarih ve sayısal alan kontrolleri.
+- Renk alanlarında `src/styles/colors.js` palet anahtarları için otomatik tamamlama (datalist) bulunur.
+- Şema SQL: `add_home_banners.sql` dosyasını Supabase SQL Editor'da çalıştırın.

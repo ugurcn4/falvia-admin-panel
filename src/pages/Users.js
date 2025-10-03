@@ -27,8 +27,6 @@ const Users = () => {
   const [imageErrors, setImageErrors] = useState(new Set());
   
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
     full_name: '',
     email: '',
     phone: '',
@@ -67,8 +65,6 @@ const Users = () => {
   const handleEditUser = (user) => {
     setEditingUser(user);
     setFormData({
-      first_name: user.first_name || '',
-      last_name: user.last_name || '',
       full_name: user.full_name || '',
       email: user.email || '',
       phone: user.phone || '',
@@ -80,7 +76,9 @@ const Users = () => {
       marital_status: user.marital_status || '',
       favorite_fortune_teller: user.favorite_fortune_teller || '',
       token_balance: user.token_balance || '',
-      is_admin: user.is_admin || false
+      is_admin: user.is_admin || false,
+      is_banned: !!user.banned_until && new Date(user.banned_until) > new Date(),
+      banned_until: user.banned_until ? new Date(user.banned_until).toISOString().slice(0, 16) : ''
     });
     setShowEditModal(true);
   };
@@ -89,8 +87,6 @@ const Users = () => {
     setShowEditModal(false);
     setEditingUser(null);
     setFormData({
-      first_name: '',
-      last_name: '',
       full_name: '',
       email: '',
       phone: '',
@@ -102,7 +98,9 @@ const Users = () => {
       marital_status: '',
       favorite_fortune_teller: '',
       token_balance: '',
-      is_admin: false
+      is_admin: false,
+      is_banned: false,
+      banned_until: ''
     });
   };
 
@@ -112,6 +110,39 @@ const Users = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleToggleAdmin = async (user) => {
+    const newAdminStatus = !user.is_admin;
+    const action = newAdminStatus ? 'admin yetkisi vermek' : 'admin yetkisini kaldırmak';
+    const confirmMessage = `${user.full_name || user.email} kullanıcısına ${action} istediğinizden emin misiniz?`;
+    
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      
+      const updateData = {
+        is_admin: newAdminStatus,
+        updated_at: new Date().toISOString()
+      };
+
+
+      const { data, error } = await updateUser(user.id, updateData);
+      
+      if (error) {
+        console.error('Toggle admin error:', error);
+        setError('Admin yetkisi güncellenirken hata oluştu: ' + error.message);
+      } else {
+        setSuccess(`Admin yetkisi ${newAdminStatus ? 'verildi' : 'kaldırıldı'}`);
+        loadUsers(); // Listeyi yenile
+        setTimeout(() => setSuccess(''), 3000);
+      }
+    } catch (err) {
+      console.error('Toggle admin catch error:', err);
+      setError('Beklenmeyen bir hata oluştu');
+    }
   };
 
   const handleUpdateUser = async (e) => {
@@ -135,18 +166,80 @@ const Users = () => {
         return;
       }
 
+      // Ad validasyonu - eğer boşsa varsayılan değer kullan
+      if (!formData.full_name.trim()) {
+        setError('Ad alanı boş bırakılamaz (ad soyad kısmından kopyalayıp ad ve soyad kısımlarına yapıştırınız)');
+        setEditLoading(false);
+        return;
+      }
+
+      // Soyad validasyonu - eğer boşsa varsayılan değer kullan  
+      if (!formData.full_name.trim()) {
+        setError('Soyad alanı boş bırakılamaz (ad soyad kısmından kopyalayıp ad ve soyad kısımlarına yapıştırınız)');
+        setEditLoading(false);
+        return;
+      }
+
+      // Admin yetkisi değişikliği kontrolü
+      const adminStatusChanged = editingUser.is_admin !== formData.is_admin;
+      if (adminStatusChanged) {
+        const action = formData.is_admin ? 'admin yetkisi vermek' : 'admin yetkisini kaldırmak';
+        const confirmMessage = `${editingUser.full_name || editingUser.email} kullanıcısına ${action} istediğinizden emin misiniz?`;
+        
+        if (!window.confirm(confirmMessage)) {
+          setEditLoading(false);
+          return;
+        }
+      }
+
+      // Form verilerini PostgreSQL uyumlu hale getir
+      const processedFormData = {};
+      Object.keys(formData).forEach(key => {
+        const value = formData[key];
+        
+        // Token balance özel işlem
+        if (key === 'token_balance') {
+          processedFormData[key] = parseInt(value) || 0;
+        }
+        // Boolean alanlar
+        else if (key === 'is_admin') {
+          processedFormData[key] = Boolean(value);
+        }
+        // NOT NULL alanlar - boş ise varsayılan değer ver
+        else if (key === 'full_name') {
+          processedFormData[key] = (typeof value === 'string' && value.trim()) ? value.trim() : '-';
+        }
+        // Email zorunlu - boş ise mevcut email'i koru
+        else if (key === 'email') {
+          processedFormData[key] = (typeof value === 'string' && value.trim()) ? value.trim() : editingUser?.email || '';
+        }
+        // Diğer string alanlar - boş ise null yap
+        else if (typeof value === 'string' && value.trim() === '') {
+          processedFormData[key] = null;
+        }
+        // Diğer değerler olduğu gibi
+        else {
+          processedFormData[key] = value;
+        }
+      });
+
       const updateData = {
-        ...formData,
-        token_balance: parseInt(formData.token_balance) || 0,
+        ...processedFormData,
         updated_at: new Date().toISOString()
       };
+
 
       const { data, error } = await updateUser(editingUser.id, updateData);
       
       if (error) {
+        console.error('Modal update error:', error);
         setError('Kullanıcı güncellenirken hata oluştu: ' + error.message);
       } else {
-        setSuccess('Kullanıcı başarıyla güncellendi');
+        const successMessage = adminStatusChanged 
+          ? `Kullanıcı başarıyla güncellendi. ${formData.is_admin ? 'Admin yetkisi verildi.' : 'Admin yetkisi kaldırıldı.'}`
+          : 'Kullanıcı başarıyla güncellendi';
+        
+        setSuccess(successMessage);
         handleCloseEditModal();
         loadUsers(); // Listeyi yenile
         setTimeout(() => setSuccess(''), 3000);
@@ -187,6 +280,11 @@ const Users = () => {
       'balık': '♓'
     };
     return zodiacEmojis[zodiacSign?.toLowerCase()] || '⭐';
+  };
+
+  const isBanned = (user) => {
+    if (!user.banned_until) return false;
+    return new Date(user.banned_until) > new Date();
   };
 
   if (loading) {
@@ -289,13 +387,24 @@ const Users = () => {
                       <h6 className="text-light mb-1 fw-bold">{user.full_name || 'İsimsiz Kullanıcı'}</h6>
                       <small className="text-muted">{user.email}</small>
                     </div>
-                    <Badge 
-                      bg={user.is_admin ? "danger" : "success"}
-                      className="ms-2"
-                      style={{ fontSize: '0.7rem' }}
-                    >
-                      {user.is_admin ? "Admin" : "Kullanıcı"}
-                    </Badge>
+                    <div className="d-flex align-items-start flex-column">
+                      <Badge 
+                        bg={user.is_admin ? "danger" : "success"}
+                        className="ms-2 mb-1"
+                        style={{ fontSize: '0.7rem' }}
+                      >
+                        {user.is_admin ? "Admin" : "Kullanıcı"}
+                      </Badge>
+                      {isBanned(user) && (
+                        <Badge 
+                          bg="dark"
+                          className="ms-2"
+                          style={{ fontSize: '0.7rem' }}
+                        >
+                          🚫 Banlandı
+                        </Badge>
+                      )}
+                    </div>
                   </div>
 
                   {/* Orta Kısım - Özet Bilgiler */}
@@ -322,6 +431,15 @@ const Users = () => {
                       onClick={() => handleEditUser(user)}
                     >
                       ✏️ Düzenle
+                    </Button>
+                    <Button 
+                      variant={user.is_admin ? "outline-danger" : "outline-success"}
+                      size="sm"
+                      style={{ fontSize: '0.75rem' }}
+                      onClick={() => handleToggleAdmin(user)}
+                      title={user.is_admin ? "Admin yetkisini kaldır" : "Admin yetkisi ver"}
+                    >
+                      {user.is_admin ? "👑" : "👤"}
                     </Button>
                   </div>
                 </Card.Body>
@@ -383,40 +501,14 @@ const Users = () => {
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Ad</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="first_name"
-                    value={formData.first_name}
-                    onChange={handleInputChange}
-                    placeholder="Kullanıcı adı"
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Soyad</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="last_name"
-                    value={formData.last_name}
-                    onChange={handleInputChange}
-                    placeholder="Kullanıcı soyadı"
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Ad Soyad</Form.Label>
+                  <Form.Label>Ad Soyad *</Form.Label>
                   <Form.Control
                     type="text"
                     name="full_name"
                     value={formData.full_name}
                     onChange={handleInputChange}
-                    placeholder="Tam ad soyad"
+                    placeholder="Tam ad soyad (zorunlu)"
+                    required
                   />
                 </Form.Group>
               </Col>
@@ -586,13 +678,59 @@ const Users = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Check
-                type="checkbox"
-                name="is_admin"
-                checked={formData.is_admin}
-                onChange={handleInputChange}
-                label="Admin Yetkisi"
-              />
+              <div className="border rounded p-3 bg-dark bg-opacity-25">
+                <Form.Check
+                  type="checkbox"
+                  name="is_admin"
+                  checked={formData.is_admin}
+                  onChange={handleInputChange}
+                  label={
+                    <div>
+                      <strong className="text-warning">👑 Admin Yetkisi</strong>
+                      <br />
+                      <small className="text-muted">
+                        Bu kullanıcıya admin yetkisi verilirse, tüm sistem ayarlarına erişim sağlayabilir.
+                      </small>
+                    </div>
+                  }
+                />
+              </div>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <div className="border rounded p-3 bg-danger bg-opacity-10 border-danger">
+                <Form.Check
+                  type="checkbox"
+                  name="is_banned"
+                  checked={formData.is_banned}
+                  onChange={handleInputChange}
+                  label={
+                    <div>
+                      <strong className="text-danger">🚫 Kullanıcı Banla</strong>
+                      <br />
+                      <small className="text-muted">
+                        Bu kullanıcı banlanırsa hesabına erişimi tamamen kesilir.
+                      </small>
+                    </div>
+                  }
+                />
+                
+                {formData.is_banned && (
+                  <div className="mt-3">
+                    <Form.Label className="text-danger">Ban Bitiş Tarihi</Form.Label>
+                    <Form.Control
+                      type="datetime-local"
+                      name="banned_until"
+                      value={formData.banned_until}
+                      onChange={handleInputChange}
+                      className="bg-danger bg-opacity-10"
+                    />
+                    <small className="text-muted">
+                      Boş bırakılırsa kalıcı ban olur. Tarih belirtilirse o tarihe kadar ban uygulanır.
+                    </small>
+                  </div>
+                )}
+              </div>
             </Form.Group>
           </Form>
         </Modal.Body>

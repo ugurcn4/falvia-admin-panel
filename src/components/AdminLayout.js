@@ -39,13 +39,45 @@ const AdminLayout = ({ children }) => {
               >
                 Falcılar
               </Nav.Link>
-              <Nav.Link 
-                as={Link} 
-                to="/stories"
+              <NavDropdown 
+                title="Hikayeler" 
+                id="stories-nav-dropdown"
                 className={location.pathname.startsWith('/stories') ? 'active' : ''}
               >
-                Hikayeler
-              </Nav.Link>
+                <NavDropdown.Item as={Link} to="/stories">
+                  Tüm Hikayeler
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/stories/add">
+                  Yeni Hikaye
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/stories/statistics">
+                  İstatistikler
+                </NavDropdown.Item>
+              </NavDropdown>
+              <NavDropdown 
+                title="Falcı Postları" 
+                id="fortune-teller-posts-nav-dropdown"
+                className={location.pathname.startsWith('/fortune-teller-posts') ? 'active' : ''}
+              >
+                <NavDropdown.Item as={Link} to="/fortune-teller-posts">
+                  Tüm Postlar
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/fortune-teller-posts/add">
+                  Yeni Post
+                </NavDropdown.Item>
+              </NavDropdown>
+              <NavDropdown 
+                title="Home Banners" 
+                id="home-banners-nav-dropdown"
+                className={location.pathname.startsWith('/home-banners') ? 'active' : ''}
+              >
+                <NavDropdown.Item as={Link} to="/home-banners">
+                  Tüm Bannerlar
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/home-banners/add">
+                  Yeni Banner
+                </NavDropdown.Item>
+              </NavDropdown>
               <Nav.Link 
                 as={Link} 
                 to="/users"
@@ -60,6 +92,22 @@ const AdminLayout = ({ children }) => {
               >
                 Fallar
               </Nav.Link>
+              <Nav.Link 
+                as={Link} 
+                to="/notifications"
+                className={location.pathname === '/notifications' ? 'active' : ''}
+              >
+                Bildirimler
+              </Nav.Link>
+              <NavDropdown 
+                title="Destek" 
+                id="support-nav-dropdown"
+                className={location.pathname.startsWith('/support') ? 'active' : ''}
+              >
+                <NavDropdown.Item as={Link} to="/support/reviews">
+                  Fal Yorumları
+                </NavDropdown.Item>
+              </NavDropdown>
             </Nav>
             
             <Nav>

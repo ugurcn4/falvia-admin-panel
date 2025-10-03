@@ -176,7 +176,7 @@ const FortuneTellers = () => {
         created_at: new Date().toISOString()
       };
 
-      const { data, error } = await createFortuneTeller(fortuneTellerData);
+      const { error } = await createFortuneTeller(fortuneTellerData);
       
       if (error) {
         setError('Falcı eklenirken hata oluştu: ' + error.message);
@@ -216,7 +216,7 @@ const FortuneTellers = () => {
         updated_at: new Date().toISOString()
       };
 
-      const { data, error } = await updateFortuneTeller(editingFortuneTeller.id, updateData);
+      const { error } = await updateFortuneTeller(editingFortuneTeller.id, updateData);
       
       if (error) {
         setError('Falcı güncellenirken hata oluştu: ' + error.message);

@@ -13,8 +13,18 @@ import EditFortuneTeller from './pages/EditFortuneTeller';
 import Stories from './pages/Stories';
 import AddStory from './pages/AddStory';
 import EditStory from './pages/EditStory';
+import StoryStatistics from './pages/StoryStatistics';
 import Users from './pages/Users';
 import Fortunes from './pages/Fortunes';
+import FortuneTellerPosts from './pages/FortuneTellerPosts';
+import AddFortuneTellerPost from './pages/AddFortuneTellerPost';
+import EditFortuneTellerPost from './pages/EditFortuneTellerPost';
+import ViewFortuneTellerPost from './pages/ViewFortuneTellerPost';
+import HomeBanners from './pages/HomeBanners';
+import AddHomeBanner from './pages/AddHomeBanner';
+import EditHomeBanner from './pages/EditHomeBanner';
+import Notifications from './pages/Notifications';
+import FortuneReviews from './pages/FortuneReviews';
 
 // Layout
 import AdminLayout from './components/AdminLayout';
@@ -98,6 +108,11 @@ function App() {
                 <EditStory />
               </ProtectedRoute>
             } />
+            <Route path="/stories/statistics" element={
+              <ProtectedRoute>
+                <StoryStatistics />
+              </ProtectedRoute>
+            } />
             <Route path="/users" element={
               <ProtectedRoute>
                 <Users />
@@ -106,6 +121,51 @@ function App() {
             <Route path="/fortunes" element={
               <ProtectedRoute>
                 <Fortunes />
+              </ProtectedRoute>
+            } />
+            <Route path="/fortune-teller-posts" element={
+              <ProtectedRoute>
+                <FortuneTellerPosts />
+              </ProtectedRoute>
+            } />
+            <Route path="/fortune-teller-posts/add" element={
+              <ProtectedRoute>
+                <AddFortuneTellerPost />
+              </ProtectedRoute>
+            } />
+            <Route path="/fortune-teller-posts/edit/:id" element={
+              <ProtectedRoute>
+                <EditFortuneTellerPost />
+              </ProtectedRoute>
+            } />
+            <Route path="/fortune-teller-posts/view/:id" element={
+              <ProtectedRoute>
+                <ViewFortuneTellerPost />
+              </ProtectedRoute>
+            } />
+            <Route path="/home-banners" element={
+              <ProtectedRoute>
+                <HomeBanners />
+              </ProtectedRoute>
+            } />
+            <Route path="/home-banners/add" element={
+              <ProtectedRoute>
+                <AddHomeBanner />
+              </ProtectedRoute>
+            } />
+            <Route path="/home-banners/edit/:id" element={
+              <ProtectedRoute>
+                <EditHomeBanner />
+              </ProtectedRoute>
+            } />
+            <Route path="/notifications" element={
+              <ProtectedRoute>
+                <Notifications />
+              </ProtectedRoute>
+            } />
+            <Route path="/support/reviews" element={
+              <ProtectedRoute>
+                <FortuneReviews />
               </ProtectedRoute>
             } />
           </Routes>
